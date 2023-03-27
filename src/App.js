@@ -83,28 +83,32 @@ function App() {
   };
 
   const calculateFaceLocation = (data) => {
-    console.log(
-      'this is from function',
-      data.outputs[0].data.regions[0].region_info.bounding_box
-    );
-    const clarifaiFace =
-      data.outputs[0].data.regions[0].region_info.bounding_box;
+    console.log('this is from function', data);
+
+    const clarifaiAllFaces = data.outputs[0].data.regions.map((value) => {
+      return value.region_info.bounding_box;
+    });
+    // console.log('All faces', clarifaiAllFaces);
     const targetImage = document.getElementById('targetImage');
     const imageWidth = Number(targetImage.width);
     const imageHeight = Number(targetImage.height);
     // console.log(imageWidth, imageHeight);
-    return {
-      leftCol: clarifaiFace.left_col * imageWidth,
-      topRow: clarifaiFace.top_row * imageHeight,
-      rightCol: imageWidth - clarifaiFace.right_col * imageWidth,
-      bottomRow: imageHeight - clarifaiFace.bottom_row * imageHeight,
-    };
+
+    const boxesLocation = clarifaiAllFaces.map((box) => {
+      return {
+        leftCol: box.left_col * imageWidth,
+        topRow: box.top_row * imageHeight,
+        rightCol: imageWidth - box.right_col * imageWidth,
+        bottomRow: imageHeight - box.bottom_row * imageHeight,
+      };
+    });
+
+    return boxesLocation;
   };
 
   const displayFaceBoundingBoxes = (box) => {
     console.log(box);
     setBoundingBoxArea({ boundingBoxArea: box });
-    console.log(boundingBoxArea);
   };
 
   const onButtonSubmit = () => {
