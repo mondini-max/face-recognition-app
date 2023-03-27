@@ -14,7 +14,7 @@ const Logo = () => {
         scale={1.02}
       >
         <div className={`pa3`}>
-          <img src={FaceImage} alt='face recognition' srcset='' />
+          <img src={FaceImage} alt='face recognition' srcSet='' />
         </div>
       </Tilt>
     </div>
