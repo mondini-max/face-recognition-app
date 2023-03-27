@@ -4,6 +4,7 @@ import Logo from './Components/Logo/Logo';
 import Navigation from './Components/Navigation/Navigation';
 import Rank from './Components/Rank/Rank';
 import Signin from './Components/SigninForm/Signin';
+import Register from './Components/Register/Register';
 import SearchImageForm from './Components/SearchImageForm/SearchImageForm';
 import ParticlesBg from 'particles-bg';
 import FaceRecognition from './Components/FaceRecognition/FaceRecognition';
@@ -17,6 +18,8 @@ function App() {
   const [searchInput, setSearchInput] = useState('');
   const [ImageUrlPath, setImageUrlPath] = useState('');
   const [boundingBoxArea, setBoundingBoxArea] = useState({});
+  const [route, setRoute] = useState('signin');
+  const [isSignedIn, setisSignedIn] = useState(false);
 
   useEffect(() => {
     setImageUrlPath(searchInput);
@@ -56,9 +59,18 @@ function App() {
     setBoundingBoxArea({ boundingBoxArea: box });
   };
 
+  const onRouteChange = (route) => {
+    if (route === 'signout') {
+      setisSignedIn(false);
+    } else if (route === 'home') {
+      setisSignedIn(true);
+    }
+    setRoute(route);
+  };
+
   const onButtonSubmit = () => {
     console.log(searchInput, ImageUrlPath);
-    console.log('clicked');
+    // console.log('clicked');
 
     // NOTE: MODEL_VERSION_ID is optional, you can also call prediction with the MODEL_ID only
     // https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
@@ -87,17 +99,27 @@ function App() {
   return (
     <div className='App'>
       <ParticlesBg num={200} type='thick' bg={true} />
-      <Navigation />
+      <Navigation onRouteChange={onRouteChange} isSignedIn={isSignedIn} />
       <Logo />
-      <Signin />
-      <Rank />
-      <SearchImageForm
-        onInputChange={onInputChange}
-        onButtonSubmit={onButtonSubmit}
-      />
-      {ImageUrlPath.length !== 0 ? (
-        <FaceRecognition box={boundingBoxArea} ImageUrlPath={ImageUrlPath} />
-      ) : null}
+      {route === 'home' ? (
+        <>
+          <Rank />
+          <SearchImageForm
+            onInputChange={onInputChange}
+            onButtonSubmit={onButtonSubmit}
+          />
+          {ImageUrlPath.length !== 0 ? (
+            <FaceRecognition
+              box={boundingBoxArea}
+              ImageUrlPath={ImageUrlPath}
+            />
+          ) : null}
+        </>
+      ) : route === 'signin' ? (
+        <Signin onRouteChange={onRouteChange} />
+      ) : (
+        <Register onRouteChange={onRouteChange} />
+      )}
     </div>
   );
 }
