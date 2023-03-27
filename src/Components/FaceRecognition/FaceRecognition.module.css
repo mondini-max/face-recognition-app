@@ -1,0 +1,27 @@
+* {
+  box-sizing: border-box;
+}
+.container {
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box !important;
+}
+.wrapper {
+  margin: 10px;
+  box-sizing: border-box !important;
+  position: absolute;
+}
+.wrapper img {
+  border-radius: 20px;
+  width: 500px;
+  height: auto;
+}
+
+.boundingBox {
+  position: absolute;
+  box-shadow: 0 0 0 3px #149df2 inset;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  cursor: pointer;
+}
