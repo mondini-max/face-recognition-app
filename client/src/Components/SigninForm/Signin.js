@@ -34,6 +34,7 @@ const Signin = ({ onRouteChange }) => {
         if (data.includes('success')) {
           console.log('bienvenue');
           setErrorMessage('');
+          onRouteChange('home');
         } else {
           setErrorMessage('Incorrect email or password');
         }
@@ -44,7 +45,6 @@ const Signin = ({ onRouteChange }) => {
     console.log(email, password);
     // setEmail('');
     // setPassword('');
-    // onRouteChange('home');
   };
 
   return (
