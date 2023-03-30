@@ -21,6 +21,15 @@ function App() {
   const [route, setRoute] = useState('signin');
   const [isSignedIn, setisSignedIn] = useState(false);
 
+  const [user, setUser] = React.useState(null);
+
+  React.useEffect(() => {
+    fetch('http://localhost:4000/')
+      .then((res) => res.json())
+      .then((data) => console.log(data));
+    // .then((data) => setData(data.message));
+  }, []);
+
   useEffect(() => {
     setImageUrlPath(searchInput);
   }, [searchInput]);
@@ -71,7 +80,6 @@ function App() {
   const onButtonSubmit = () => {
     console.log(searchInput, ImageUrlPath);
     // console.log('clicked');
-
     // NOTE: MODEL_VERSION_ID is optional, you can also call prediction with the MODEL_ID only
     // https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
     // this will default to the latest version_id
