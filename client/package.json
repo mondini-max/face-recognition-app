@@ -1,5 +1,5 @@
 {
-  "name": "face recognition app client",
+  "name": "face-recognition-app-client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
