@@ -41,13 +41,17 @@ app.get('/', (req, res) => {
 app.post('/signing', async (req, res, next) => {
   const { email, password } = req.body;
 
-  const match = await bcrypt.compare(password, database.users[0].password);
+  if (email === '' && password === '') {
+    res.status(400).json('error logging in');
+  } else if (email !== null && password !== null) {
+    const match = await bcrypt.compare(password, database.users[0].password);
 
-  if (email === database.users[0].email && match) {
-    console.log('welcome ' + req.body.email);
-    res.status(200).json('success');
-    next();
-    return;
+    if (email === database.users[0].email && match) {
+      console.log('welcome ' + req.body.email);
+      res.status(200).json('success');
+      next();
+      return;
+    }
   }
   res.status(400).json('error logging in');
 });
