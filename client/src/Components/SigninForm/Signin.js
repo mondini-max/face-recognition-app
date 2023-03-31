@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { UserContext } from '../../context/UserContext';
 
 const Signin = ({ onRouteChange }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
+  const { user, setUser } = useContext(UserContext);
   const onEmailChange = (e) => {
     const emailEntries = e.target.value.toLowerCase().trim();
     setEmail(emailEntries);
@@ -24,8 +26,8 @@ const Signin = ({ onRouteChange }) => {
         // 'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: JSON.stringify({
-        email,
-        password,
+        email: email,
+        password: password,
       }),
     })
       .then((res) => res.json())
@@ -86,6 +88,7 @@ const Signin = ({ onRouteChange }) => {
           <div className='white'>
             <input
               // onClick={() => handleSubmit}
+              disabled={email === '' && password === '' ? true : false}
               className='b ph3 pv2 input-reset ba b--white bg-transparent grow pointer f4 dib white'
               type='submit'
               value='Sign in'

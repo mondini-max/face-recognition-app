@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment, useMemo } from 'react';
 import './App.css';
 import Logo from './Components/Logo/Logo';
 import Navigation from './Components/Navigation/Navigation';
@@ -13,6 +13,7 @@ import {
   MODEL_VERSION_ID,
   clarifaiRequestOptionsConfig,
 } from './Components/ClarifaiConfigs/ClarifaiConfigs';
+import { UserContext } from './context/UserContext';
 
 function App() {
   const [searchInput, setSearchInput] = useState('');
@@ -22,6 +23,7 @@ function App() {
   const [isSignedIn, setisSignedIn] = useState(false);
 
   const [user, setUser] = React.useState(null);
+  const providerValues = useMemo(() => ({ user, setUser }), [user, setUser]);
 
   React.useEffect(() => {
     fetch('http://localhost:4000/')
@@ -93,6 +95,26 @@ function App() {
       clarifaiRequestOptionsConfig(searchInput)
     )
       .then((response) => {
+        try {
+          fetch('http://localhost:4000/image', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: user?.id,
+            }),
+          }).then((res) =>
+            res.json().then((count) => {
+              console.log(count);
+              setUser((user) => {
+                return { ...user, entries: count };
+              });
+            })
+          );
+        } catch (error) {
+          console.log(error);
+        }
         return response.json();
       })
       .then((result) => {
@@ -105,30 +127,34 @@ function App() {
       .catch((error) => console.log('error', error));
   };
   return (
-    <div className='App'>
-      <ParticlesBg num={200} type='thick' bg={true} />
-      <Navigation onRouteChange={onRouteChange} isSignedIn={isSignedIn} />
-      <Logo />
-      {route === 'home' ? (
-        <>
-          <Rank />
-          <SearchImageForm
-            onInputChange={onInputChange}
-            onButtonSubmit={onButtonSubmit}
-          />
-          {ImageUrlPath.length !== 0 ? (
-            <FaceRecognition
-              box={boundingBoxArea}
-              ImageUrlPath={ImageUrlPath}
-            />
-          ) : null}
-        </>
-      ) : route === 'signin' ? (
-        <Signin onRouteChange={onRouteChange} />
-      ) : (
-        <Register onRouteChange={onRouteChange} />
-      )}
-    </div>
+    <Fragment>
+      <UserContext.Provider value={providerValues}>
+        <div className='App'>
+          <ParticlesBg num={200} type='thick' bg={true} />
+          <Navigation onRouteChange={onRouteChange} isSignedIn={isSignedIn} />
+          <Logo />
+          {route === 'home' ? (
+            <>
+              <Rank />
+              <SearchImageForm
+                onInputChange={onInputChange}
+                onButtonSubmit={onButtonSubmit}
+              />
+              {ImageUrlPath.length !== 0 ? (
+                <FaceRecognition
+                  box={boundingBoxArea}
+                  ImageUrlPath={ImageUrlPath}
+                />
+              ) : null}
+            </>
+          ) : route === 'signin' ? (
+            <Signin onRouteChange={onRouteChange} />
+          ) : (
+            <Register onRouteChange={onRouteChange} />
+          )}
+        </div>
+      </UserContext.Provider>
+    </Fragment>
   );
 }
 

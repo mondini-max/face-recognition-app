@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { UserContext } from '../../context/UserContext';
 
 const Register = ({ onRouteChange }) => {
   const [email, setEmail] = useState('');
@@ -6,6 +7,7 @@ const Register = ({ onRouteChange }) => {
   const [name, setName] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
+  const { user, setUser } = useContext(UserContext);
   const onEmailChange = (e) => {
     const emailEntries = e.target.value.toLowerCase().trim();
     setEmail(emailEntries);
@@ -23,35 +25,47 @@ const Register = ({ onRouteChange }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch('http://localhost:4000/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // 'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: JSON.stringify({
-        email,
-        password,
-        name,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        if (data) {
-          console.log('bienvenue');
-          setErrorMessage('');
-          onRouteChange('home');
-        } else {
-          setErrorMessage('Incorrect email or password');
-        }
+    console.log('this is email', email.length);
+    if (email.length === 0 && name.length === 0 && password.length === 0) {
+      setErrorMessage('To register please fill out the form below');
+    } else {
+      fetch('http://localhost:4000/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          name,
+        }),
       })
-      .catch((error) => {
-        console.log({ error });
-      });
-    console.log(email, password);
-    // setEmail('');
-    // setPassword('');
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          if (data) {
+            console.log('bienvenue');
+            setUser({
+              id: data.id,
+              name: data.name,
+              email: data.email,
+              joined: data.joined,
+              entires: data.entires,
+            });
+            setErrorMessage('');
+            onRouteChange('home');
+          } else {
+            setErrorMessage('Incorrect email or password');
+          }
+        })
+        .catch((error) => {
+          console.log({ error });
+        });
+      console.log(email, password);
+      // setEmail('');
+      // setPassword('');
+    }
   };
   return (
     <div className='br3 ba white b--white mv4 w-100 w-50-m w-25-1 mw6 center bg-black bw1'>
