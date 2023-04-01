@@ -1,7 +1,7 @@
 import express from 'express';
 import * as dotenv from 'dotenv'; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 import bodyParser from 'body-parser';
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import cors from 'cors';
 import knex from 'knex';
@@ -23,80 +23,77 @@ const db = knex({
   },
 });
 
-// db.select('*')
-//   .from('users')
-//   .then((data) => console.log(data));
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
 
 const saltRounds = 11;
 
-const database = {
-  users: [
-    {
-      id: '201',
-      name: 'john',
-      email: 'johndoe@gmail.com',
-      password: '$2b$11$KWQff1adUzTenEaRznh9lepKO6LKjJ3HtMeJpEM9pOeJ3pAqwdnlW',
-      entires: 0,
-      joined: new Date(),
-    },
-    {
-      id: '203',
-      name: 'sally',
-      email: 'sally_doe@gmail.com',
-      password: 'booksfan',
-      entires: 0,
-      joined: new Date(),
-    },
-  ],
-};
-
 app.get('/', (req, res) => {
   res.send(database.users);
 });
 
 app.post('/signing', async (req, res, next) => {
-  const { email, password } = req.body;
-
-  if (email === '' && password === '') {
-    res.status(400).json('error logging in');
-  } else if (email !== null && password !== null) {
-    const match = await bcrypt.compare(password, database.users[0].password);
-
-    if (email === database.users[0].email && match) {
-      console.log('welcome ' + req.body.email);
-      res.status(200).json('success');
-      next();
-      return;
-    }
-  }
-  res.status(400).json('error logging in');
+  const { email, password } = await req.body;
+  await db
+    .select('email', 'hash')
+    .from('login')
+    .where('email', '=', email)
+    .then(async (data) => {
+      if (data.length) {
+        const isMatched = await bcrypt.compare(password, data[0].hash);
+        // console.log(isMatched);
+        if (isMatched) {
+          return db
+            .select('*')
+            .from('users')
+            .where('email', '=', email)
+            .then((user) => {
+              console.log(user);
+              return res.status(200).json(user[0]);
+            });
+        } else {
+          return res.status(400).json('incorrect username and / or password');
+        }
+      } else {
+        res.status(404).json('Not Found');
+      }
+    });
 });
 
 app.post('/register', async (req, res) => {
-  const { email, name, password } = req.body;
-  const username = email.split('@').shift();
+  const { email, name, password } = await req.body;
+  const username = await email.split('@').shift();
   const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-  db('users')
-    .insert({
-      email,
-      name,
-      username,
-      joined: new Date(),
-    })
-    .returning('*')
-    .then((user) => {
-      if (user) {
-        res.json(user);
-      }
+  await db
+    .transaction((trx) => {
+      trx
+        .insert({
+          hash: hashedPassword,
+          email: email,
+        })
+        .into('login')
+        .returning('email')
+        .then(async (loginEmail) => {
+          return await db('users')
+            .insert({
+              email: loginEmail[0]?.email,
+              name,
+              username,
+              joined: new Date(),
+            })
+            .returning('*')
+            .then((user) => {
+              if (user) {
+                return res.json(user);
+              }
+            });
+        })
+        .then(trx.commit)
+        .catch(trx.rollback);
     })
     .catch((err) => {
-      console.log(err.code);
-
+      // console.log(err.code);
       res
         .status(400)
         .json('unable to register/ please login or use another email address');
@@ -126,13 +123,20 @@ app.get('/profile/:id', (req, res) => {
 app.put('/image', (req, res) => {
   const { id } = req.body;
   console.log(id);
-  database.users.forEach((user) => {
-    if (user.id === id) {
-      user.entires++;
-      return res.status(200).json(user.entires);
-    }
-    return res.status(404).json('Not Found');
-  });
+  db('users')
+    .where('id', '=', id)
+    .increment('entries', 1)
+    .returning('entries')
+    .then((entires) => {
+      if (entires.length) {
+        res.status(200).json(entires[0]);
+      } else {
+        res.status(404).json('Not Found');
+      }
+    })
+    .catch((err) => {
+      return res.status(404).json('Not Found');
+    });
 });
 
 app.listen(port, () => {
