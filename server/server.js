@@ -1,11 +1,31 @@
 import express from 'express';
+import * as dotenv from 'dotenv'; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 import bodyParser from 'body-parser';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import cors from 'cors';
+import knex from 'knex';
 
 const app = express();
-const port = 4000;
+dotenv.config();
+
+const { DatabaseHOST, PORT, DatabaseUSER, DatabasePASSWORD, DatabaseName } =
+  process.env;
+const port = PORT || 4000;
+
+const db = knex({
+  client: 'pg',
+  connection: {
+    host: DatabaseHOST,
+    user: DatabaseUSER,
+    password: DatabasePASSWORD,
+    database: DatabaseName,
+  },
+});
+
+// db.select('*')
+//   .from('users')
+//   .then((data) => console.log(data));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -58,28 +78,51 @@ app.post('/signing', async (req, res, next) => {
 
 app.post('/register', async (req, res) => {
   const { email, name, password } = req.body;
+  const username = email.split('@').shift();
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-  database.users.push({
-    id: uuidv4(),
-    name: name,
-    email: email,
-    password: hashedPassword,
-    entires: 0,
-    joined: new Date(),
-  });
-  res.json(database.users[database.users.length - 1]);
+  db('users')
+    .insert({
+      email,
+      name,
+      username,
+      joined: new Date(),
+    })
+    .returning('*')
+    .then((user) => {
+      if (user) {
+        res.json(user);
+      }
+    })
+    .catch((err) => {
+      console.log(err.code);
+
+      res
+        .status(400)
+        .json('unable to register/ please login or use another email address');
+    });
 });
 
-app.get('/profile/:userId', (req, res) => {
-  const { userId } = req.params;
-  database.users.forEach((user) => {
-    if (user.id === userId) {
-      return res.status(200).json(user);
-    }
-    return res.status(404).json('Not Found');
-  });
+app.get('/profile/:id', (req, res) => {
+  // console.log(req.params);
+  const { id } = req.params;
+  db.select('*')
+    .from('users')
+    .where({
+      id,
+    })
+    .then((user) => {
+      if (user.length) {
+        return res.status(200).json(user[0]);
+      } else {
+        return res.status(400).json('Not Found');
+      }
+    })
+    .catch((err) => {
+      return res.status(404).json('Not Found');
+    });
 });
+
 app.put('/image', (req, res) => {
   const { id } = req.body;
   console.log(id);
