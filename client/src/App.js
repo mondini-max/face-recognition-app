@@ -14,6 +14,7 @@ import {
   clarifaiRequestOptionsConfig,
 } from './Components/ClarifaiConfigs/ClarifaiConfigs';
 import { UserContext } from './context/UserContext';
+import { calculateFaceLocation } from './Components/utils/CalculateFaceLocation';
 
 function App() {
   const [searchInput, setSearchInput] = useState('');
@@ -25,44 +26,13 @@ function App() {
   const [user, setUser] = React.useState(null);
   const providerValues = useMemo(() => ({ user, setUser }), [user, setUser]);
 
-  React.useEffect(() => {
-    fetch('http://localhost:4000/')
-      .then((res) => res.json())
-      .then((data) => console.log(data));
-    // .then((data) => setData(data.message));
-  }, []);
-
   useEffect(() => {
     setImageUrlPath(searchInput);
-  }, [searchInput]);
+  }, [searchInput, user]);
 
   const onInputChange = (event) => {
     console.log(event.target.value);
     setSearchInput(event.target.value);
-  };
-
-  const calculateFaceLocation = (data) => {
-    console.log('this is from function', data);
-
-    const clarifaiAllFaces = data.outputs[0].data.regions.map((value) => {
-      return value.region_info.bounding_box;
-    });
-    // console.log('All faces', clarifaiAllFaces);
-    const targetImage = document.getElementById('targetImage');
-    const imageWidth = Number(targetImage.width);
-    const imageHeight = Number(targetImage.height);
-    // console.log(imageWidth, imageHeight);
-
-    const boxesLocation = clarifaiAllFaces.map((box) => {
-      return {
-        leftCol: box.left_col * imageWidth,
-        topRow: box.top_row * imageHeight,
-        rightCol: imageWidth - box.right_col * imageWidth,
-        bottomRow: imageHeight - box.bottom_row * imageHeight,
-      };
-    });
-
-    return boxesLocation;
   };
 
   const displayFaceBoundingBoxes = (box) => {
@@ -79,14 +49,13 @@ function App() {
     setRoute(route);
   };
 
-  const onButtonSubmit = () => {
-    console.log(searchInput, ImageUrlPath);
+  const onButtonSubmit = async () => {
     // console.log('clicked');
     // NOTE: MODEL_VERSION_ID is optional, you can also call prediction with the MODEL_ID only
     // https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
     // this will default to the latest version_id
 
-    fetch(
+    await fetch(
       'https://api.clarifai.com/v2/models/' +
         MODEL_ID +
         '/versions/' +
@@ -94,34 +63,32 @@ function App() {
         '/outputs',
       clarifaiRequestOptionsConfig(searchInput)
     )
-      .then((response) => {
-        try {
-          fetch('http://localhost:4000/image', {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              id: user?.id,
-            }),
-          }).then((res) =>
-            res.json().then((count) => {
-              console.log(count);
-              setUser((user) => {
-                return { ...user, entries: count };
-              });
-            })
-          );
-        } catch (error) {
-          console.log(error);
-        }
-        return response.json();
-      })
-      .then((result) => {
+      .then((response) => response.json())
+      .then(async (result) => {
         // console.log('this is result', { result });
         if (result.status.code === 10000) {
           // calculateFaceLocation(result);
-          displayFaceBoundingBoxes(calculateFaceLocation(result));
+          try {
+            await fetch('http://localhost:4000/image', {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                id: user?.id,
+              }),
+            }).then((res) =>
+              res.json().then((count) => {
+                // console.log(count);
+                setUser((prev) => ({ ...prev, entries: count.entries }));
+              })
+            );
+            return displayFaceBoundingBoxes(
+              await calculateFaceLocation(result)
+            );
+          } catch (error) {
+            console.log(error);
+          }
         }
       })
       .catch((error) => console.log('error', error));
