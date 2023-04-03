@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { UserContext } from '../../context/UserContext';
 
 const Signin = ({ onRouteChange }) => {
@@ -17,9 +17,9 @@ const Signin = ({ onRouteChange }) => {
     setPassword(passwordEntries);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    fetch('http://localhost:4000/signing', {
+    await fetch('http://localhost:4000/signing', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,23 +30,34 @@ const Signin = ({ onRouteChange }) => {
         password: password,
       }),
     })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        if (data.includes('success')) {
-          console.log('bienvenue');
+      .then(async (res) => await res.json())
+      .then(async (newuser) => {
+        const NotValideuser = await newuser
+          ?.toLowerCase()
+          .includes('not found');
+        if (NotValideuser) {
+          setErrorMessage('please register to use our services');
+          return;
+        }
+
+        if (
+          newuser !== 'incorrect username and / or password' ||
+          newuser !== 'Not Found'
+        ) {
           setErrorMessage('');
+          await setUser(newuser);
+          setEmail('');
+          setPassword('');
           onRouteChange('home');
         } else {
           setErrorMessage('Incorrect email or password');
         }
       })
       .catch((error) => {
-        console.log({ error });
+        // console.log({ error });
+        setErrorMessage('Incorrect email or password');
+        return;
       });
-    console.log(email, password);
-    // setEmail('');
-    // setPassword('');
   };
 
   return (
@@ -87,7 +98,6 @@ const Signin = ({ onRouteChange }) => {
           </fieldset>
           <div className='white'>
             <input
-              // onClick={() => handleSubmit}
               disabled={email === '' && password === '' ? true : false}
               className='b ph3 pv2 input-reset ba b--white bg-transparent grow pointer f4 dib white'
               type='submit'
