@@ -6,8 +6,8 @@ const Rank = () => {
   const { user } = useContext(UserContext);
   return (
     <div className={RankSTYLE.wrapper}>
-      <div className='white f3'>{`${user?.name} your current rank is...`}</div>
-      <div className='white f1'>{`#${user?.entires}`}</div>
+      <div className='white f2'>{`${user?.name} your current rank is...`}</div>
+      <div className='white f1'>{`#${user?.entries}`}</div>
     </div>
   );
 };
