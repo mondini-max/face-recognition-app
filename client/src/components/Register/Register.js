@@ -7,7 +7,7 @@ const Register = ({ onRouteChange }) => {
   const [name, setName] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const { user, setUser } = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
   const onEmailChange = (e) => {
     const emailEntries = e.target.value.toLowerCase().trim();
     setEmail(emailEntries);

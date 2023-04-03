@@ -1,20 +1,20 @@
 import React, { useState, useEffect, Fragment, useMemo } from 'react';
 import './App.css';
-import Logo from './Components/Logo/Logo';
-import Navigation from './Components/Navigation/Navigation';
-import Rank from './Components/Rank/Rank';
-import Signin from './Components/SigninForm/Signin';
-import Register from './Components/Register/Register';
-import SearchImageForm from './Components/SearchImageForm/SearchImageForm';
+import Logo from '../components/Logo/Logo';
+import Navigation from '../components/Navigation/Navigation';
+import Rank from '../components/Rank/Rank';
+import Signin from '../components/SigninForm/Signin';
+import Register from '../components/Register/Register';
+import SearchImageForm from '../components/SearchImageForm/SearchImageForm';
 import ParticlesBg from 'particles-bg';
-import FaceRecognition from './Components/FaceRecognition/FaceRecognition';
+import FaceRecognition from '../components/FaceRecognition/FaceRecognition';
 import {
   MODEL_ID,
   MODEL_VERSION_ID,
   clarifaiRequestOptionsConfig,
-} from './Components/ClarifaiConfigs/ClarifaiConfigs';
-import { UserContext } from './context/UserContext';
-import { calculateFaceLocation } from './Components/utils/CalculateFaceLocation';
+} from '../clarifaiConfigs/ClarifaiConfigs';
+import { UserContext } from '../context/UserContext';
+import { calculateFaceLocation } from '../utils/CalculateFaceLocation';
 
 function App() {
   const [searchInput, setSearchInput] = useState('');
@@ -22,12 +22,12 @@ function App() {
   const [boundingBoxArea, setBoundingBoxArea] = useState({});
   const [route, setRoute] = useState('signin');
   const [isSignedIn, setisSignedIn] = useState(false);
-
   const [user, setUser] = React.useState(null);
   const providerValues = useMemo(() => ({ user, setUser }), [user, setUser]);
 
   useEffect(() => {
     setImageUrlPath(searchInput);
+    setBoundingBoxArea(boundingBoxArea);
   }, [searchInput, user]);
 
   const onInputChange = (event) => {

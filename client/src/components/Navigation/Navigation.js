@@ -1,12 +1,18 @@
-import React from 'react';
+import { useContext } from 'react';
 import NavigationSTYLE from './Navigation.module.css';
+import { UserContext } from '../../context/UserContext';
 
 const Navigation = ({ onRouteChange, isSignedIn }) => {
+  const { user, setUser } = useContext(UserContext);
+  const handleSignout = () => {
+    setUser(null);
+    onRouteChange('singout');
+  };
   if (isSignedIn) {
     return (
       <nav style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <p
-          onClick={() => onRouteChange('signout')}
+          onClick={handleSignout}
           className='f3 link dim white underline pa3 pointer'
         >
           Sign Out
