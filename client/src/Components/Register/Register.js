@@ -25,7 +25,7 @@ const Register = ({ onRouteChange }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('this is email', email.length);
+    // console.log('this is email', email.length);
     if (email.length === 0 && name.length === 0 && password.length === 0) {
       setErrorMessage('To register please fill out the form below');
     } else {
@@ -43,28 +43,29 @@ const Register = ({ onRouteChange }) => {
       })
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
-          if (data) {
-            console.log('bienvenue');
-            setUser({
-              id: data.id,
-              name: data.name,
-              email: data.email,
-              joined: data.joined,
-              entires: data.entires,
-            });
-            setErrorMessage('');
-            onRouteChange('home');
+          // console.log(data);
+          const regError = data
+            ?.toString()
+            .toLowerCase()
+            .includes('unable to register');
+          // console.log(regError);
+          if (regError) {
+            setErrorMessage('email exists already');
+            return;
           } else {
-            setErrorMessage('Incorrect email or password');
+            // console.log('bienvenue');
+            setUser(data);
+            setErrorMessage('');
+            setEmail('');
+            setPassword('');
+            setName('');
+            onRouteChange('home');
+            return;
           }
         })
         .catch((error) => {
           console.log({ error });
         });
-      console.log(email, password);
-      // setEmail('');
-      // setPassword('');
     }
   };
   return (
@@ -74,19 +75,6 @@ const Register = ({ onRouteChange }) => {
           <fieldset id='sign_up' className='ba b--transparent ph0 mh0'>
             <legend className='f2 fw6 ph0 mh0'>Register</legend>
             {errorMessage}
-            <div className='mt3'>
-              <label className='db fw6 lh-copy f4' htmlFor='email-address'>
-                Email
-              </label>
-              <input
-                className='pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100 white'
-                type='email'
-                value={email}
-                onChange={onEmailChange}
-                name='email-address'
-                id='email-address'
-              />
-            </div>
             <div className='mt3'>
               <label className='db fw6 lh-copy f4' htmlFor='fullName'>
                 Name
@@ -98,6 +86,19 @@ const Register = ({ onRouteChange }) => {
                 onChange={onNameChange}
                 name='fullName'
                 id='fullName'
+              />
+            </div>
+            <div className='mt3'>
+              <label className='db fw6 lh-copy f4' htmlFor='email-address'>
+                Email
+              </label>
+              <input
+                className='pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100 white'
+                type='email'
+                value={email}
+                onChange={onEmailChange}
+                name='email-address'
+                id='email-address'
               />
             </div>
             <div className='mv3'>
