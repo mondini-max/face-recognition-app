@@ -85,7 +85,7 @@ app.post('/register', async (req, res) => {
             .returning('*')
             .then((user) => {
               if (user) {
-                return res.json(user);
+                return res.json(user[0]);
               }
             });
         })
