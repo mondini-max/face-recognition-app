@@ -1,11 +1,12 @@
 import { useState, useContext, useEffect } from 'react';
 import { UserContext } from '../../context/UserContext';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Signin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-
+  const navigate = useNavigate();
   const { user, setUser } = useContext(UserContext);
   const onEmailChange = (e) => {
     const emailEntries = e.target.value.toLowerCase().trim();
@@ -32,14 +33,12 @@ const Signin = () => {
     })
       .then(async (res) => await res.json())
       .then(async (newuser) => {
-        const NotValideuser = await newuser
-          ?.toLowerCase()
-          .includes('not found');
-        if (NotValideuser) {
-          setErrorMessage('please register to use our services');
-          return;
-        }
-
+        // console.log(newuser);
+        // const NotValideuser = newuser?.toLowerCase().includes('not found');
+        // if (NotValideuser) {
+        //   setErrorMessage('please register to use our services');
+        //   return;
+        // }
         if (
           newuser !== 'incorrect username and / or password' ||
           newuser !== 'Not Found'
@@ -48,6 +47,7 @@ const Signin = () => {
           await setUser(newuser);
           setEmail('');
           setPassword('');
+          navigate('/home');
         } else {
           setErrorMessage('Incorrect email or password');
         }
@@ -104,7 +104,9 @@ const Signin = () => {
             />
           </div>
           <div className='lh-copy mt3 f4'>
-            <p className=' link dim white db f6 pointer'>Register</p>
+            <Link to='register' className=' link dim white db f6 pointer'>
+              Register
+            </Link>
           </div>
         </form>
       </main>

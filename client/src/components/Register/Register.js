@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { UserContext } from '../../context/UserContext';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -7,6 +8,7 @@ const Register = () => {
   const [name, setName] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
+  const navigate = useNavigate();
   const { setUser } = useContext(UserContext);
   const onEmailChange = (e) => {
     const emailEntries = e.target.value.toLowerCase().trim();
@@ -59,7 +61,7 @@ const Register = () => {
             setEmail('');
             setPassword('');
             setName('');
-
+            navigate('/home');
             return;
           }
         })
@@ -123,7 +125,9 @@ const Register = () => {
             />
           </div>
           <div className='lh-copy mt3 f4'>
-            <p className=' link dim white db f6 pointer'>Sign In</p>
+            <Link to='/' className=' link dim white db f6 pointer'>
+              Sign In
+            </Link>
           </div>
         </form>
       </main>

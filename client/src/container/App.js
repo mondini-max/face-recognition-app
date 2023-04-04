@@ -13,6 +13,7 @@ import { UserContext } from '../context/UserContext';
 import { calculateFaceLocation } from '../utils/CalculateFaceLocation';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { SharedLayout } from '../Layout/SharedLayout';
+import ProtectedRoute from '../utils/ProtectedRoute';
 
 function App() {
   const [searchInput, setSearchInput] = useState('');
@@ -85,26 +86,28 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<SharedLayout />}>
+            <Route index element={<Signin />} />
             <Route
-              index
+              path='home'
               element={
-                <Fragment>
-                  <Rank />
-                  <SearchImageForm
-                    onInputChange={onInputChange}
-                    onButtonSubmit={onButtonSubmit}
-                  />
-                  {ImageUrlPath.length !== 0 ? (
-                    <FaceRecognition
-                      box={boundingBoxArea}
-                      ImageUrlPath={ImageUrlPath}
+                <ProtectedRoute>
+                  <Fragment>
+                    <Rank />
+                    <SearchImageForm
+                      onInputChange={onInputChange}
+                      onButtonSubmit={onButtonSubmit}
                     />
-                  ) : null}
-                </Fragment>
+                    {ImageUrlPath.length !== 0 ? (
+                      <FaceRecognition
+                        box={boundingBoxArea}
+                        ImageUrlPath={ImageUrlPath}
+                      />
+                    ) : null}
+                  </Fragment>
+                </ProtectedRoute>
               }
             />
-            <Route path='signin' element={<Signin />} />
-            <Route path='register' element={<Register />} />
+            <Route exact path='/register' element={<Register />} />
           </Route>
         </Routes>
       </BrowserRouter>
