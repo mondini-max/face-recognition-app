@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import { UserContext } from '../../context/UserContext';
 
-const Signin = ({ onRouteChange }) => {
+const Signin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -48,7 +48,6 @@ const Signin = ({ onRouteChange }) => {
           await setUser(newuser);
           setEmail('');
           setPassword('');
-          onRouteChange('home');
         } else {
           setErrorMessage('Incorrect email or password');
         }
@@ -105,12 +104,7 @@ const Signin = ({ onRouteChange }) => {
             />
           </div>
           <div className='lh-copy mt3 f4'>
-            <p
-              onClick={() => onRouteChange('register')}
-              className=' link dim white db f6 pointer'
-            >
-              Register
-            </p>
+            <p className=' link dim white db f6 pointer'>Register</p>
           </div>
         </form>
       </main>

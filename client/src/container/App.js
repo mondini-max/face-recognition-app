@@ -1,12 +1,8 @@
-import React, { useState, useEffect, Fragment, useMemo } from 'react';
-import './App.css';
-import Logo from '../components/Logo/Logo';
-import Navigation from '../components/Navigation/Navigation';
+import React, { useState, useEffect, useMemo, Fragment } from 'react';
 import Rank from '../components/Rank/Rank';
 import Signin from '../components/SigninForm/Signin';
 import Register from '../components/Register/Register';
 import SearchImageForm from '../components/SearchImageForm/SearchImageForm';
-import ParticlesBg from 'particles-bg';
 import FaceRecognition from '../components/FaceRecognition/FaceRecognition';
 import {
   MODEL_ID,
@@ -15,19 +11,20 @@ import {
 } from '../clarifaiConfigs/ClarifaiConfigs';
 import { UserContext } from '../context/UserContext';
 import { calculateFaceLocation } from '../utils/CalculateFaceLocation';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { SharedLayout } from '../Layout/SharedLayout';
 
 function App() {
   const [searchInput, setSearchInput] = useState('');
   const [ImageUrlPath, setImageUrlPath] = useState('');
   const [boundingBoxArea, setBoundingBoxArea] = useState({});
-  const [route, setRoute] = useState('signin');
+  // const [route, setRoute] = useState('signin');
   const [isSignedIn, setisSignedIn] = useState(false);
-  const [user, setUser] = React.useState(null);
+  const [user, setUser] = useState(null);
   const providerValues = useMemo(() => ({ user, setUser }), [user, setUser]);
 
   useEffect(() => {
     setImageUrlPath(searchInput);
-    setBoundingBoxArea(boundingBoxArea);
   }, [searchInput, user]);
 
   const onInputChange = (event) => {
@@ -40,21 +37,11 @@ function App() {
     setBoundingBoxArea({ boundingBoxArea: box });
   };
 
-  const onRouteChange = (route) => {
-    if (route === 'signout') {
-      setisSignedIn(false);
-    } else if (route === 'home') {
-      setisSignedIn(true);
-    }
-    setRoute(route);
-  };
-
   const onButtonSubmit = async () => {
     // console.log('clicked');
     // NOTE: MODEL_VERSION_ID is optional, you can also call prediction with the MODEL_ID only
     // https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
     // this will default to the latest version_id
-
     await fetch(
       'https://api.clarifai.com/v2/models/' +
         MODEL_ID +
@@ -94,34 +81,34 @@ function App() {
       .catch((error) => console.log('error', error));
   };
   return (
-    <Fragment>
-      <UserContext.Provider value={providerValues}>
-        <div className='App'>
-          <ParticlesBg num={200} type='thick' bg={true} />
-          <Navigation onRouteChange={onRouteChange} isSignedIn={isSignedIn} />
-          <Logo />
-          {route === 'home' ? (
-            <>
-              <Rank />
-              <SearchImageForm
-                onInputChange={onInputChange}
-                onButtonSubmit={onButtonSubmit}
-              />
-              {ImageUrlPath.length !== 0 ? (
-                <FaceRecognition
-                  box={boundingBoxArea}
-                  ImageUrlPath={ImageUrlPath}
-                />
-              ) : null}
-            </>
-          ) : route === 'signin' ? (
-            <Signin onRouteChange={onRouteChange} />
-          ) : (
-            <Register onRouteChange={onRouteChange} />
-          )}
-        </div>
-      </UserContext.Provider>
-    </Fragment>
+    <UserContext.Provider value={providerValues}>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<SharedLayout />}>
+            <Route
+              index
+              element={
+                <Fragment>
+                  <Rank />
+                  <SearchImageForm
+                    onInputChange={onInputChange}
+                    onButtonSubmit={onButtonSubmit}
+                  />
+                  {ImageUrlPath.length !== 0 ? (
+                    <FaceRecognition
+                      box={boundingBoxArea}
+                      ImageUrlPath={ImageUrlPath}
+                    />
+                  ) : null}
+                </Fragment>
+              }
+            />
+            <Route path='signin' element={<Signin />} />
+            <Route path='register' element={<Register />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </UserContext.Provider>
   );
 }
 

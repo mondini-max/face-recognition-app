@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { UserContext } from '../../context/UserContext';
 
-const Register = ({ onRouteChange }) => {
+const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -59,7 +59,7 @@ const Register = ({ onRouteChange }) => {
             setEmail('');
             setPassword('');
             setName('');
-            onRouteChange('home');
+
             return;
           }
         })
@@ -123,12 +123,7 @@ const Register = ({ onRouteChange }) => {
             />
           </div>
           <div className='lh-copy mt3 f4'>
-            <p
-              onClick={() => onRouteChange('signin')}
-              className=' link dim white db f6 pointer'
-            >
-              Sign In
-            </p>
+            <p className=' link dim white db f6 pointer'>Sign In</p>
           </div>
         </form>
       </main>
