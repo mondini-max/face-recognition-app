@@ -1,7 +1,10 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 const {
-  REACT_APP_CLARIFAI_PAT,
-  // REACT_APP_CLARIFAI_APIKey,
-  REACT_APP_CLARIFAI_USER_ID,
+  CLARIFAI_PAT,
+  // CLARIFAI_APIKey,
+  CLARIFAI_USER_ID,
 } = process.env;
 
 // face recognition model
@@ -15,10 +18,10 @@ export const MODEL_VERSION_ID = '6dc7e46bc9124c5c8824be4822abe105';
 
 export const clarifaiRequestOptionsConfig = (imageUrl) => {
   // Your PAT (Personal Access Token) can be found in the portal under Authentification
-  const PAT = REACT_APP_CLARIFAI_PAT;
+  const PAT = CLARIFAI_PAT;
   // Specify the correct user_id/app_id pairings
   // Since you're making inferences outside your app's scope
-  const USER_ID = REACT_APP_CLARIFAI_USER_ID;
+  const USER_ID = CLARIFAI_USER_ID;
   const APP_ID = 'face-recoginition-app';
   // Change these to whatever model and image URL you want to use
   const IMAGE_URL = imageUrl;

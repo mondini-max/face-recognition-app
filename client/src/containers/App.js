@@ -4,16 +4,10 @@ import Signin from '../components/SigninForm/Signin';
 import Register from '../components/Register/Register';
 import SearchImageForm from '../components/SearchImageForm/SearchImageForm';
 import FaceRecognition from '../components/FaceRecognition/FaceRecognition';
-import {
-  MODEL_ID,
-  MODEL_VERSION_ID,
-  clarifaiRequestOptionsConfig,
-} from '../clarifaiConfigs/ClarifaiConfigs';
 import { UserContext } from '../context/UserContext';
 import { calculateFaceLocation } from '../utils/CalculateFaceLocation';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { SharedLayout } from '../Layout/SharedLayout';
-import ProtectedRoute from '../utils/ProtectedRoute';
 import { Page404 } from '../components/Page404/Page404';
 
 function App() {
@@ -39,20 +33,18 @@ function App() {
 
   const onButtonSubmit = async () => {
     // console.log('clicked');
-    // NOTE: MODEL_VERSION_ID is optional, you can also call prediction with the MODEL_ID only
-    // https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
-    // this will default to the latest version_id
-    await fetch(
-      'https://api.clarifai.com/v2/models/' +
-        MODEL_ID +
-        '/versions/' +
-        MODEL_VERSION_ID +
-        '/outputs',
-      clarifaiRequestOptionsConfig(searchInput)
-    )
+    await fetch('http://localhost:4000/smart-ai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        requestedImg: searchInput,
+      }),
+    })
       .then((response) => response.json())
       .then(async (result) => {
-        // console.log('this is result', { result });
+        console.log('this is result', { result });
         if (result.status.code === 10000) {
           // calculateFaceLocation(result);
           try {
