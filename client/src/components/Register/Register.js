@@ -61,7 +61,7 @@ const Register = () => {
             setEmail('');
             setPassword('');
             setName('');
-            navigate('/home');
+            navigate('/');
             return;
           }
         })
