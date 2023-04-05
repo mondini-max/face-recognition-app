@@ -86,11 +86,16 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<SharedLayout />}>
-            <Route index element={<Signin />} />
             <Route
-              path='home'
+              index
               element={
-                <ProtectedRoute>
+                user === null ? (
+                  <Fragment>
+                    <h1 className='f2 fw6 ph0 mh0 white-70 tc pt5'>
+                      Welcome to smart app
+                    </h1>
+                  </Fragment>
+                ) : (
                   <Fragment>
                     <Rank />
                     <SearchImageForm
@@ -104,9 +109,10 @@ function App() {
                       />
                     ) : null}
                   </Fragment>
-                </ProtectedRoute>
+                )
               }
             />
+            <Route exact path='/signin' element={<Signin />} />
             <Route exact path='/register' element={<Register />} />
           </Route>
         </Routes>

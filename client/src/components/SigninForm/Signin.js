@@ -34,22 +34,21 @@ const Signin = () => {
       .then(async (res) => await res.json())
       .then(async (newuser) => {
         // console.log(newuser);
-        // const NotValideuser = newuser?.toLowerCase().includes('not found');
-        // if (NotValideuser) {
-        //   setErrorMessage('please register to use our services');
-        //   return;
-        // }
-        if (
-          newuser !== 'incorrect username and / or password' ||
-          newuser !== 'Not Found'
-        ) {
+        if (newuser === 'Not Found') {
+          setErrorMessage('please register!  to use our services');
+          return;
+        } else if (newuser === 'incorrect username and / or password') {
           setErrorMessage('');
-          await setUser(newuser);
+          setErrorMessage('incorrect username and / or password');
+          return;
+        } else if (newuser.id !== 'undefined' || newuser.id !== 'undefined') {
+          setErrorMessage('');
+          setUser(newuser);
           setEmail('');
           setPassword('');
-          navigate('/home');
+          navigate('/');
         } else {
-          setErrorMessage('Incorrect email or password');
+          return null;
         }
       })
       .catch((error) => {

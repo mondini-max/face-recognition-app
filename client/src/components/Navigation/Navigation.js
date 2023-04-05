@@ -8,7 +8,7 @@ const Navigation = ({ isSignedIn }) => {
   const navigate = useNavigate();
   const handleSignout = () => {
     setUser(null);
-    navigate('/');
+    navigate('/signin');
   };
   if (!!user) {
     return (
@@ -24,7 +24,10 @@ const Navigation = ({ isSignedIn }) => {
   } else {
     return (
       <nav style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <NavLink className='f3 link dim white underline pa3 pointer' to={'/'}>
+        <NavLink
+          className='f3 link dim white underline pa3 pointer'
+          to={'/signin'}
+        >
           Sign In
         </NavLink>
         <NavLink
