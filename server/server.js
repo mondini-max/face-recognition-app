@@ -9,11 +9,7 @@ import registerController from './controllers/registerController.js';
 import signinController from './controllers/signinController.js';
 import updateRank from './controllers/updateRankController.js';
 import getUserById from './controllers/getUserByIdController.js';
-import {
-  clarifaiRequestOptionsConfig,
-  MODEL_ID,
-  MODEL_VERSION_ID,
-} from './Clarifai/ClarifaiConfigs.js';
+import smart_ai_controller from './controllers/smart_ai_controller.js';
 
 const app = express();
 dotenv.config();
@@ -34,23 +30,7 @@ app.post('/signing', (req, res, next) =>
 app.post('/register', (req, res) => registerController(req, res, db, bcrypt));
 app.get('/profile/:id', (req, res) => getUserById(req, res, db));
 app.put('/image', (req, res) => updateRank(req, res, db));
-app.post('/smart-ai', async (req, res) => {
-  const { requestedImg } = req.body;
-  // NOTE: MODEL_VERSION_ID is optional, you can also call prediction with the MODEL_ID only
-  // https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
-  // this will default to the latest version_id
-  return await fetch(
-    'https://api.clarifai.com/v2/models/' +
-      MODEL_ID +
-      '/versions/' +
-      MODEL_VERSION_ID +
-      '/outputs',
-    clarifaiRequestOptionsConfig(requestedImg)
-  )
-    .then((response) => response.json())
-    .then((data) => res.json(data))
-    .catch((error) => res.status(400).json('unable to get entires'));
-});
+app.post('/smart-ai', (req, res) => smart_ai_controller(req, res));
 
 app.listen(port, () => {
   console.log(`Server is listening on port http://localhost:${port}`);
