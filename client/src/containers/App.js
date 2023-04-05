@@ -44,7 +44,7 @@ function App() {
     })
       .then((response) => response.json())
       .then(async (result) => {
-        console.log('this is result', { result });
+        // console.log('this is result', { result });
         if (result.status.code === 10000) {
           // calculateFaceLocation(result);
           try {

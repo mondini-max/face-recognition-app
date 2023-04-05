@@ -1,6 +1,6 @@
 const updateRank = async (req, res, db) => {
   const { id } = req.body;
-  console.log(id);
+  // console.log(id);
   await db('users')
     .where('id', '=', id)
     .increment('entries', 1)

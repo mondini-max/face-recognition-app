@@ -1,5 +1,5 @@
 export const calculateFaceLocation = async (data) => {
-  console.log('this is from function', data);
+  // console.log('this is from function', data);
 
   const clarifaiAllFaces = await data.outputs[0].data.regions.map((value) => {
     return value.region_info.bounding_box;

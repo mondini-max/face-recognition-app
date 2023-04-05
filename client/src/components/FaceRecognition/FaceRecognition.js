@@ -2,7 +2,7 @@ import React from 'react';
 import FaceRecognitionSTYLE from './FaceRecognition.module.css';
 
 const FaceRecognition = ({ ImageUrlPath, box = {} }) => {
-  console.log('Face Recognition Component', box);
+  // console.log('Face Recognition Component', box);
 
   return (
     <div className={FaceRecognitionSTYLE.container}>
