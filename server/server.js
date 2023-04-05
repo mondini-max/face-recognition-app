@@ -26,13 +26,8 @@ app.use(cors());
 app.post('/signing', (req, res, next) =>
   signinController(req, res, next, db, bcrypt)
 );
-
-app.post('/register', (req, res) => {
-  registerController(req, res, db, bcrypt);
-});
-
+app.post('/register', (req, res) => registerController(req, res, db, bcrypt));
 app.get('/profile/:id', (req, res) => getUserById(req, res, db));
-
 app.put('/image', (req, res) => updateRank(req, res, db));
 
 app.listen(port, () => {
