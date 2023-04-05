@@ -14,13 +14,12 @@ import { calculateFaceLocation } from '../utils/CalculateFaceLocation';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { SharedLayout } from '../Layout/SharedLayout';
 import ProtectedRoute from '../utils/ProtectedRoute';
+import { Page404 } from '../components/Page404/Page404';
 
 function App() {
   const [searchInput, setSearchInput] = useState('');
   const [ImageUrlPath, setImageUrlPath] = useState('');
   const [boundingBoxArea, setBoundingBoxArea] = useState({});
-  // const [route, setRoute] = useState('signin');
-  const [isSignedIn, setisSignedIn] = useState(false);
   const [user, setUser] = useState(null);
   const providerValues = useMemo(() => ({ user, setUser }), [user, setUser]);
 
@@ -85,7 +84,16 @@ function App() {
     <UserContext.Provider value={providerValues}>
       <BrowserRouter>
         <Routes>
-          <Route path='/' element={<SharedLayout />}>
+          <Route
+            path='/'
+            element={
+              <SharedLayout
+                setBoundingBoxArea={setBoundingBoxArea}
+                setImageUrlPath={setImageUrlPath}
+                setSearchInput={setSearchInput}
+              />
+            }
+          >
             <Route
               index
               element={
@@ -114,6 +122,7 @@ function App() {
             />
             <Route exact path='/signin' element={<Signin />} />
             <Route exact path='/register' element={<Register />} />
+            <Route exact path='*' element={<Page404 />} />
           </Route>
         </Routes>
       </BrowserRouter>
