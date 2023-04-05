@@ -1,6 +1,9 @@
 const saltRounds = 11;
 const registerController = async (req, res, db, bcrypt) => {
   const { email, name, password } = await req.body;
+  if (!email || !name || !password) {
+    return res.status(400).json('incorrect form submission');
+  }
   const username = await email.split('@').shift();
   const hashedPassword = await bcrypt.hash(password, saltRounds);
   await db
