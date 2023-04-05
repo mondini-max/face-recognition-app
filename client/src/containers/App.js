@@ -28,12 +28,12 @@ function App() {
   }, [searchInput, user]);
 
   const onInputChange = (event) => {
-    console.log(event.target.value);
+    // console.log(event.target.value);
     setSearchInput(event.target.value);
   };
 
   const displayFaceBoundingBoxes = (box) => {
-    console.log(box);
+    // console.log(box);
     setBoundingBoxArea({ boundingBoxArea: box });
   };
 
