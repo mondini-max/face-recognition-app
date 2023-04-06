@@ -13,8 +13,8 @@ export const MODEL_ID = 'face-detection';
 export const MODEL_VERSION_ID = '6dc7e46bc9124c5c8824be4822abe105';
 
 // color detection model
-// const MODEL_ID = 'color-recognition';
-// const MODEL_VERSION_ID = 'dd9458324b4b45c2be1a7ba84d27cd04';
+// export const MODEL_ID = 'color-recognition';
+// export const MODEL_VERSION_ID = 'dd9458324b4b45c2be1a7ba84d27cd04';
 
 export const clarifaiRequestOptionsConfig = (imageUrl) => {
   // Your PAT (Personal Access Token) can be found in the portal under Authentification
