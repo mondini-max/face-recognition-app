@@ -125,7 +125,7 @@ const Register = () => {
             />
           </div>
           <div className='lh-copy mt3 f4'>
-            <Link to='/' className=' link dim white db f6 pointer'>
+            <Link to='/signin' className=' link dim white db f6 pointer'>
               Sign In
             </Link>
           </div>

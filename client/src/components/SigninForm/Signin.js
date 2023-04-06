@@ -103,7 +103,7 @@ const Signin = () => {
             />
           </div>
           <div className='lh-copy mt3 f4'>
-            <Link to='register' className=' link dim white db f6 pointer'>
+            <Link to='/register' className=' link dim white db f6 pointer'>
               Register
             </Link>
           </div>
