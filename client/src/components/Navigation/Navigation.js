@@ -1,7 +1,7 @@
 import { useContext } from 'react';
-import NavigationSTYLE from './Navigation.module.css';
 import { UserContext } from '../../context/UserContext';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { ProfileIcon } from '../DropdownMenu/ProfileIconMenu';
 
 const Navigation = ({
   setImageUrlPath,
@@ -9,6 +9,7 @@ const Navigation = ({
   setSearchInput,
 }) => {
   const { user, setUser } = useContext(UserContext);
+
   const navigate = useNavigate();
   const handleSignout = () => {
     setUser(null);
@@ -18,15 +19,16 @@ const Navigation = ({
     navigate('/signin');
   };
 
-  if (user !== null) {
+  if (user === null) {
     return (
-      <nav style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <NavLink
-          onClick={handleSignout}
-          className='f3 link dim white underline pa3 pointer'
-        >
-          Sign Out
-        </NavLink>
+      <nav
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          marginRight: '2em',
+        }}
+      >
+        <ProfileIcon handleSignout={handleSignout} />
       </nav>
     );
   } else {

@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import ParticlesBg from 'particles-bg';
 import Logo from '../components/Logo/Logo';
 import Navigation from '../components/Navigation/Navigation';
+
 export const SharedLayout = ({
   setBoundingBoxArea,
   setImageUrlPath,

@@ -9,6 +9,7 @@ import { calculateFaceLocation } from '../utils/CalculateFaceLocation';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { SharedLayout } from '../Layout/SharedLayout';
 import { Page404 } from '../components/Page404/Page404';
+import { Profile } from '../components/Profile/Profile';
 
 function App() {
   const [searchInput, setSearchInput] = useState('');
@@ -109,6 +110,21 @@ function App() {
                       />
                     ) : null}
                   </Fragment>
+                )
+              }
+            />
+            <Route
+              exact
+              path='/profile'
+              element={
+                user !== null ? (
+                  <Fragment>
+                    <h1 className='f2 fw6 ph0 mh0 white-70 tc pt5'>
+                      Welcome to smart app
+                    </h1>
+                  </Fragment>
+                ) : (
+                  <Profile />
                 )
               }
             />
