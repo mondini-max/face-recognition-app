@@ -115,7 +115,7 @@ function App() {
             />
             <Route
               exact
-              path='/profile'
+              path={`/profile/:${user?.id}`}
               element={
                 user !== null ? (
                   <Fragment>

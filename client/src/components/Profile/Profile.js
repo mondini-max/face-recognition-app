@@ -1,17 +1,23 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { UserContext } from '../../context/UserContext';
 
 import Panda from '../../assets/images/pandaIcon.png';
 
 import './Profile.css';
 export const Profile = () => {
+  const { user, setUser } = useContext(UserContext);
   return (
     <div className='profile-modal'>
       <div className='br3 mv4 w-100 w-50-m w-25-1 mw6 center bg-lightest-blue  bw1 shadow-2'>
         <main className='pa4 f3 black'>
           <img src={Panda} alt='panda-avatar' className='h3 w3 dib' />
-          <h1>John doe</h1>
-          <h4>Images Submitted: 5</h4>
-          <h6>Member since: April</h6>
+          <h1>{user?.name}</h1>
+          <h4>{`Images Submitted: ${user ? user?.entries : 0}`}</h4>
+          <h5>{`Member since: ${
+            user
+              ? new Date(user?.joined).toLocaleDateString()
+              : new Date().toLocaleDateString()
+          }`}</h5>
           <label className='mt2 fw6' htmlFor='username'>
             Name:
           </label>
