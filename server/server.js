@@ -32,13 +32,14 @@ app.post('/signing', (req, res, next) =>
 app.post('/register', (req, res) => registerController(req, res, db, bcrypt));
 app.get('/profile/:id', (req, res) => getUserById(req, res, db));
 app.put('/profile/:id', (req, res) => {
+  // console.log(req.body);
   const { age, pet, name } = req.body.userInfo;
   const { id } = req.params;
   db('users')
     .where({ id: id })
-    .update({ name: name, pet: pet, age })
+    .update({ name, pet, age })
     .then((resp) => {
-      console.log('this is res in server', { resp });
+      // console.log('this is res in server', { resp });
       if (resp) {
         res.status(200).json('user info updated');
       } else {
