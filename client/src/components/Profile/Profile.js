@@ -1,11 +1,52 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { UserContext } from '../../context/UserContext';
+import { useLocation } from 'react-router-dom';
 
 import Panda from '../../assets/images/pandaIcon.png';
 
 import './Profile.css';
 export const Profile = () => {
   const { user, setUser } = useContext(UserContext);
+  const [name, setName] = useState(user?.name);
+  const [age, setAge] = useState(user?.age);
+  const [pet, setPet] = useState(user?.pet);
+  const location = useLocation();
+  const userId = location.pathname.split('/').pop();
+
+  const onFormChange = (event) => {
+    switch (event.target.name) {
+      case 'user-name':
+        setName(event.target.value);
+        break;
+      case 'userAge':
+        setAge(event.target.value);
+        break;
+      case 'userPet':
+        setPet(event.target.value);
+        break;
+      default:
+        return;
+    }
+    console.log(name, pet, age);
+  };
+  const onProfileUpdate = async () => {
+    await fetch(`http://localhost:4000/profile/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userInfo: {
+          name,
+          pet,
+          age,
+        },
+      }),
+    })
+      .then((resp) => resp.json())
+      .then((data) => console.log(data));
+  };
+
   return (
     <div className='profile-modal'>
       <div className='br3 mv4 w-100 w-50-m w-25-1 mw6 center bg-lightest-blue  bw1 shadow-2'>
@@ -18,7 +59,7 @@ export const Profile = () => {
               ? new Date(user?.joined).toLocaleDateString()
               : new Date().toLocaleDateString()
           }`}</h5>
-          <label className='mt2 fw6' htmlFor='username'>
+          <label className='mt2 fw6' htmlFor='user-name'>
             Name:
           </label>
           <input
@@ -27,8 +68,9 @@ export const Profile = () => {
             // value={name}
             // onChange={onNameChange}
             placeholder='John doe'
-            name='username'
-            id='username'
+            name='user-name'
+            id='user-name'
+            onChange={onFormChange}
           />
           <label className='mt2 fw6 ' htmlFor='userAge'>
             age:
@@ -41,6 +83,7 @@ export const Profile = () => {
             placeholder='45'
             name='userAge'
             id='userAge'
+            onChange={onFormChange}
           />
           <label className='mt2 fw6' htmlFor='userPet'>
             Pet:
@@ -54,6 +97,7 @@ export const Profile = () => {
             placeholder='cat'
             name='userPet'
             id='userPet'
+            onChange={onFormChange}
           />
           <div
             className='mt4'
@@ -62,7 +106,10 @@ export const Profile = () => {
               justifyContent: 'space-evenly',
             }}
           >
-            <button className='b br3 ph4 pv2 grow pointer hover-black bg-light-blue b--black-20'>
+            <button
+              onClick={() => onProfileUpdate()}
+              className='b br3 ph4 pv2 grow pointer hover-black bg-light-blue b--black-20'
+            >
               Save
             </button>
             <button className='b ph4  br4 grow pointer hover-black bg-light-red b--black-20'>
