@@ -36,7 +36,7 @@ app.put('/profile/:id', (req, res) => {
   const { age, pet, name } = req.body.userInfo;
   const { id } = req.params;
   db('users')
-    .where({ id: id })
+    .where({ id })
     .update({ name, pet, age })
     .then((resp) => {
       // console.log('this is res in server', { resp });
